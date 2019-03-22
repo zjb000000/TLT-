@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gg.tlt.mapper.ProfessionMapper">
+    <resultMap id="professionMap" type="com.gg.tlt.model.Profession">
+        <id column="job_title" property="jobTitle" jdbcType="VARCHAR"/>
+        <id column="max_salary" property="maxSalary" jdbcType="INTEGER"/>
+        <id column="min_salary" property="minSalary" jdbcType="INTEGER"/>
+        <id column="experience_year" property="experienceYear" jdbcType="INTEGER"/>
+        <id column="education_needed" property="educationNeeded" jdbcType="VARCHAR"/>
+        <id column="province" property="province" jdbcType="VARCHAR"/>
+    </resultMap>
+    <resultMap id="positionMap" type="com.gg.tlt.model.Profession">
+        <id column="job_title" property="jobTitle" jdbcType="VARCHAR"/>
+        <id column="number_of_people" property="numberOfPeople" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <resultMap id="educationMap" type="com.gg.tlt.model.Profession">
+        <id column="job_title" property="jobTitle" jdbcType="VARCHAR"/>
+        <id column="education_needed" property="educationNeeded" jdbcType="VARCHAR"/>
+        <id column="number_of_people" property="numberOfPeople" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <resultMap id="positionSearchMap" type="com.gg.tlt.model.Profession">
+        <id column="job_title" property="jobTitle" jdbcType="VARCHAR"/>
+        <id column="max_salary" property="maxSalary" jdbcType="INTEGER"/>
+        <id column="min_salary" property="minSalary" jdbcType="INTEGER"/>
+        <id column="number_of_people" property="numberOfPeople" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <resultMap id="salarySearchMap" type="com.gg.tlt.model.Profession">
+        <id column="job_title" property="jobTitle" jdbcType="VARCHAR"/>
+        <id column="max_salary" property="maxSalary" jdbcType="INTEGER"/>
+        <id column="min_salary" property="minSalary" jdbcType="INTEGER"/>
+        <id column="number_of_people" property="numberOfPeople" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <resultMap id="areaSearchMap" type="com.gg.tlt.model.Profession">
+        <id column="job_title" property="jobTitle" jdbcType="VARCHAR"/>
+        <id column="min_salary" property="minSalary" jdbcType="INTEGER"/>
+        <id column="max_salary" property="maxSalary" jdbcType="INTEGER"/>
+        <id column="number_of_people" property="numberOfPeople" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <resultMap id="areaSearch1Map" type="com.gg.tlt.model.Profession">
+        <id column="job_title" property="jobTitle" jdbcType="VARCHAR"/>
+        <id column="min_salary" property="minSalary" jdbcType="INTEGER"/>
+        <id column="max_salary" property="maxSalary" jdbcType="INTEGER"/>
+        <id column="number_of_people" property="numberOfPeople" jdbcType="INTEGER"/>
+    </resultMap>
+
+
+    <select id="selectOrderedSalary" resultMap="professionMap">
+        select * from job_data order by max_salary desc limit 5
+    </select>
+
+    <select id="selectEducation" resultMap="educationMap">
+        select job_title, education_needed, sum(number_of_people) as number_of_people
+        from job_data
+        Group by job_title,education_needed
+        order by number_of_people desc
+        limit 5
+    </select>
+
+    <select id="selectArea" resultMap="professionMap">
+        select * from job_data
+    </select>
+
+    <select id="selectPosition" resultMap="positionMap">
+        select job_title, sum(number_of_people) as number_of_people
+        from job_data
+        Group by job_title
+        order by number_of_people desc
+        limit 5
+    </select>
+
+    <select id="searchPosition" parameterType="String" resultMap="positionSearchMap">
+        select job_title, min(min_salary),max(max_salary),sum(number_of_people) as number_of_people
+        from job_data
+        where job_title LIKE CONCAT('%',#{jobTitle},'%')
+        Group by job_title
+        order by number_of_people desc;
+    </select>
+
+    <select id="searchSalary" resultMap="salarySearchMap">
+        select job_title,min(min_salary) as min_salary, max(max_salary) as max_salary ,sum(number_of_people) as number_of_people
+        from job_data
+        where (min_salary>=#{minSalary}) and (#{maxSalary}>=max_salary)
+        Group by job_title
+        order by number_of_people desc
+        limit 5
+    </select>
+
+    <select id="searchAre" resultMap="areaSearchMap">
+        select job_title, min(min_salary) as min_salary ,max(max_salary) as max_salary,sum(number_of_people) as number_of_people
+        from job_data
+        where (province = #{profProv}) and (city = #{profCity})
+        Group by job_title
+        order by number_of_people desc
+    </select>
+
+    <select id="searchArean" parameterType="String" resultMap="areaSearch1Map">
+        select job_title, min(min_salary) as min_salary ,max(max_salary) as max_salary,sum(number_of_people) as number_of_people
+        from job_data
+        where (province like CONCAT('%',#{profProOrCity},'%')) or (city like CONCAT('%',#{profProOrCity},'%'))
+        Group by job_title
+        order by number_of_people desc
+    </select>
+
+</mapper>

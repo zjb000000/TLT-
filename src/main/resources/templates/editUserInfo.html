@@ -1,0 +1,320 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>用户个人信息</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <!-- VENDOR CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="vendor/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="vendor/linearicons/style.css">
+    <!-- MAIN CSS -->
+    <link rel="stylesheet" href="css/main.css">
+    <!-- FOR DEMO PURPOSES ONLY. You should remove this in your project -->
+    <link rel="stylesheet" href="css/demo.css">
+    <!-- GOOGLE FONTS -->
+    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700" rel="stylesheet">
+    <!-- ICONS -->
+    <link rel="apple-touch-icon" sizes="76x76" href="img/apple-icon.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="img/favicon.png">
+    <style>
+        #mask { position: absolute; left:0; top:0; background:#000; opacity:0.3; filter:Alpha(opacity:30); display: none; }
+        div.selectBox{display:none;position:relative;top:-420px;left:200px;bottom:30%;right:30%; width:550px;height:500px;border:30px solid ghostwhite;background-color:white;z-index:1002}
+        div.shelter{display:none;position:fixed;top:0px;left:0px;width:100%;height:100%;background-color:black;opacity:0.6;z-index:1001}
+    </style>
+</head>
+
+<body>
+<!-- WRAPPER -->
+<div id="wrapper">
+    <!-- NAVBAR -->
+    <nav class="navbar navbar-default navbar-fixed-top">
+        <div class="brand">
+            <a href="/aboutUs"><img src="img/logo.png" alt="TLT Logo"
+                                          class="img-responsive logo"></a>
+        </div>
+        <div class="container-fluid">
+            <div class="navbar-btn">
+                <button type="button" class="btn-toggle-fullwidth"><i class="lnr lnr-arrow-left-circle"></i></button>
+            </div>
+            <div id="navbar-menu">
+                <ul class="nav navbar-nav navbar-right">
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle icon-menu" data-toggle="dropdown">
+                            <i class="lnr lnr-alarm"></i>
+                            <span class="badge bg-danger">5</span>
+                        </a>
+                    </li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                            <img src="img/user.png" class="img-circle" alt="Avatar">
+                            <span th:text="${session.user.nickname}"></span>
+                            <i class="icon-submenu lnr lnr-chevron-down"></i></a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a href="/editUserInfo">
+                                    <i class="lnr lnr-user">
+                                    </i>
+                                    <span>个人信息</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/index">
+                                    <i class="lnr lnr-envelope"></i>
+                                    <span onclick="drop()">注销
+										</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <!-- END NAVBAR -->
+    <!-- LEFT SIDEBAR -->
+    <div id="sidebar-nav" class="sidebar">
+        <div class="sidebar-scroll">
+            <nav>
+                <ul class="nav">
+                    <li><a href="/homePage" class=""><i class="lnr lnr-home"></i> <span>主页</span></a></li>
+                    <li>
+                        <a href="#subPages" data-toggle="collapse" class="collapsed"><i class="lnr lnr-file-empty"></i> <span>信息检索</span> <i class="icon-submenu lnr lnr-chevron-left"></i></a>
+                        <div id="subPages" class="collapse ">
+                            <ul class="nav">
+                                <li><a th:href="@{/searchArea}" th:if="${session.role.geoSearch}==1">地域检索</a></li>
+                                <li><a th:href="@{/searchPosition}" th:if="${session.role.jobSearch}==1">热门职位检索</a></li>
+                                <li><a th:href="@{/searchSalary}" th:if="${session.role.salSearch}==1">薪资信息检索</a></li>
+
+                            </ul></div>
+                    </li>
+                    <li>
+                        <a href="#subPages1" data-toggle="collapse" class="collapsed"><i class="lnr lnr-code"></i> <span>人才情况展示</span> <i class="icon-submenu lnr lnr-chevron-left"></i></a>
+                        <div id="subPages1" class="collapse ">
+                            <ul class="nav">
+                                <li><a th:href="@{/showPosition}" th:if="${session.role.occDis}==1">职业占比展示</a></li>
+                                <li><a th:href="@{/showEducation}" th:if="${session.role.eduDis}==1">学历情况展示</a></li>
+                                <li><a th:href="@{/showOrderedSalary}" th:if="${session.role.talDis}==1">人才薪资展示</a></li>
+                                <li><a th:href="@{/showArea}" th:if="${session.role.geoDis}==1">地域类型展示</a></li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li><a href="/aboutUs" class=""><i class="lnr lnr-linearicons"></i> <span>关于我们</span></a></li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+    <!-- END LEFT SIDEBAR -->
+    <!--<div>-->
+        <!--<img src="../static/img/Info.png" height="300" width="533"/>-->
+    <!--</div>>-->
+    <!-- MAIN -->
+    <!--<img src="../static/img/Info.png" height="300" width="533" alt="Avatar"/>-->
+    <div class="main">
+        <!-- MAIN CONTENT -->
+        <div class="main-content">
+            <div class="container-fluid">
+                <div class="panel panel-profile">
+                     <!--<img src="../static/img/Info.jpg" class="img-circle"/>-->
+                    <div class="clearfix"/>
+                        <!-- LEFT COLUMN -->
+                        <!--<div class="profile-left">-->
+                            <!-- PROFILE HEADER -->
+
+                            <div class="profile-header">
+                                <div class="overlay"></div>
+                                <div class="profile-main">
+
+                                    <!--<img src="../static/img/Info.png" height="300" width="533" alt="Avatar"/>-->
+                                    <img src="img/user3.png" class="img-circle" alt="Avatar"/>
+                                    <!--<img src="img/user-medium.png" class="img-circle" alt="Avatar">-->
+                                    <h3 class="name"></h3>
+                                    <span class="online-status status-available">头像</span>
+                                    <div class="profile-detail">
+                                        <div class="profile-info">
+                                            <h4 class="heading" style="padding-left:0">个人信息</h4>
+                                            <ul class="list-unstyled list-justify" style="padding-left:100px; padding-right: 320px;">
+                                                <li>ID
+                                                    <span th:text="${session.user.id}"></span>
+                                                </li>
+                                                <li>账户名
+                                                    <span th:text="${session.user.nickname}"></span>
+                                                </li>
+                                                <li>性别
+                                                    <span th:switch="${session.user.sex}">
+                                                <p th:case="false">女</p>
+                                                 <p th:case="true">男</p>
+                                            </span>
+                                                </li>
+                                            </ul>
+                                            <div class="text-center" style="margin-top: 60px">
+                                                <input id="modify" type="button" class="btn btn-primary" value="修改信息" onclick="Info_modifyBox()"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="profile-detail">
+                                <div class="profile-info">
+                                    <div id="mask"></div>
+                                    <form id="form1" runat="server">
+
+                                        <div id="modify_window" class="selectBox">
+                                            <h3 align="center">个人信息修改</h3>
+                                            <form class="form-auth-small" action="index.php">
+                                                <p style="padding-left: 30px">ID：
+                                                    <span style="visibility:hidden; color: #d4af7a; margin-left: 0" id="err_id">ID不可修改</span>
+                                                </p>
+                                                <div class="form-group" style="padding-left: 30px;padding-right: 30px">
+                                                    <label for="password" class="control-label sr-only"></label>
+                                                    <input type="text" class="form-control" id="id" th:value="${session.user.id}" placeholder="ID" readonly="true" onfocus="i()" onblur="i1()">
+                                                </div>
+                                                <p style="padding-left: 30px">账户名：
+                                                    <span style="visibility:hidden; color: #d4af7a; margin-left: 0" id="err_nickname">请输入账户名</span>
+                                                </p>
+                                                <div class="form-group" style="padding-left: 30px;padding-right: 30px">
+                                                    <label for="nickname" class="control-label sr-only"></label>
+                                                    <input type="text" class="form-control" id="nickname" th:value="${session.user.nickname}" placeholder="账户名" onblur="n()" onfocus="n1()">
+                                                </div>
+                                                <p style="padding-left: 30px">密码：
+                                                    <span style="visibility:hidden; color: #d4af7a; margin-left: 0" id="err_passwd">请输入密码</span>
+                                                </p>
+                                                <div class="form-group" style="padding-left: 30px;padding-right: 30px">
+                                                    <label for="password" class="control-label sr-only"></label>
+                                                    <input type="password" class="form-control" id="password" th:value="${session.user.password}" placeholder="密码" onblur="p()" onfocus="p1()">
+                                                </div>
+                                                <p style="padding-left: 30px">再次输入密码：
+                                                    <span style="visibility:hidden; color: #d4af7a; margin-left: 0" id="err_passwdAgain">请输入和上面一样的密码</span>
+                                                </p>
+                                                <div class="form-group" style="padding-left: 30px;padding-right: 30px">
+                                                    <label for="password_again" class="control-label sr-only"></label>
+                                                    <input type="password" class="form-control" id="password_again" th:value="${session.user.password}" placeholder="再次输入密码" onblur="a()" onfocus="a1()">
+                                                </div>
+                                                <div style="padding-left: 30px;padding-right: 30px">
+                                                    性别：
+                                                    <input type="radio" name="radio" value="1" th:checked="${session.user.sex}">男
+                                                    <input type="radio" name="radio" value="0" th:checked="!${session.user.sex}">女
+                                                </div><br>
+                                                <div  style="text-align: center;padding-right: 30px">
+                                                    <button type="submit" style="margin: 0 15px 0 0">取消</button>
+                                                    <button type="update" style="margin: 0 0 0 15px" id="updateInfo">确认</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                        <div id="shelter" class="shelter"></div>
+                                    </form>
+                                        </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- END MAIN CONTENT -->
+</div>
+<!-- END MAIN -->
+<div class="clearfix"></div>
+<footer>
+    <div class="container-fluid">
+        <p class="copyright">Copyright &copy; 2019.Company TLT人才大数据分析平台 All rights reserved.</p>
+    </div>
+</footer>
+</div>
+<!-- END WRAPPER -->
+<script>
+    function i() {
+        document.getElementById("err_id").style.visibility="visible";
+    }
+
+    function i1() {
+        document.getElementById("err_id").style.visibility="hidden";
+    }
+
+    function n() {
+        if (document.getElementById("nickname").value==""){
+            document.getElementById("err_nickname").style.visibility="visible";
+        }
+    }
+
+    function n1() {
+        document.getElementById("err_nickname").style.visibility="hidden";
+    }
+
+    function p() {
+        if(document.getElementById("password").value==""){
+            document.getElementById("err_passwd").style.visibility="visible";
+        }
+    }
+
+    function p1() {
+        document.getElementById("err_passwd").style.visibility="hidden";
+    }
+
+    function a() {
+        if(document.getElementById("password_again").value==""){
+            document.getElementById("err_passwdAgain").style.visibility="visible";
+        }
+    }
+
+    function a1() {
+        document.getElementById("err_passwdAgain").style.visibility="hidden";
+    }
+</script>
+<script type="text/javascript">
+    var oMask = document.getElementById('mask');
+    var oImg = document.getElementById('modify_window');
+    var oBtn = document.getElementById('modify');
+    oBtn.onclick = function (){
+        oMask.style.display = 'block';
+        oImg.style.display = 'block';
+        oMask.style.width = document.documentElement.clientWidth + 'px';
+        oMask.style.height = document.documentElement.clientHeight + 'px';
+        oImg.style.left = (document.documentElement.clientWidth - oImg.offsetWidth)/2 -180+ 'px';
+        oImg.style.top = (document.documentElement.clientHeight - oImg.offsetHeight)/2 -900+ 'px';
+    };
+</script>
+
+<!-- Javascript -->
+<script src="vendor/jquery/jquery.min.js"></script>
+<script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+<script src="vendor/jquery-slimscroll/jquery.slimscroll.min.js"></script>
+<script src="scripts/klorofil-common.js"></script>
+<script>
+
+    $(function () {
+        $("#updateInfo").click(function () {
+            var nickname = $("#nickname").val();
+            var password = $("#password").val();
+            var passwod_again = $("#password_again").val();
+            var sex = $('input[name="radio"]:checked').val();
+            var id = $("#id").val();
+            console.log("update");
+            $.ajax({
+                url: "/updateUserById",
+                type: "post",
+                dataType: "json",
+                async:false,
+                data: {
+                    "nickname": nickname,
+                    "sex": sex,
+                    "password": password,
+                    "id": id
+                },
+                success: function (data) {
+                    if (data > 0){
+                        window.location.reload();
+                    }
+                },
+                error: function () {
+                    console.log("请求失败");
+                }
+            });
+        });
+
+    })
+</script>
+</body>
+
+</html>

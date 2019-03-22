@@ -1,0 +1,222 @@
+<html>
+<head>
+    <title>首页</title>
+    <script type="text/javascript" src="vendor/jquery/jquery.js"></script>
+    <script type="text/javascript" src="vendor/jquery/jquery.min.js"></script>
+    <link rel='stylesheet prefetch' href='http://fonts.googleapis.com/css?family=Open+Sans'>
+    <link rel="stylesheet" href="vendor/bootstrap/css/style.css">
+</head>
+<body>
+<p class="tip">TLT人才情况大数据分析平台</p>
+<div class="cont">
+    <div class="form sign-in">
+        <form>
+            <h2>欢迎使用</h2>
+            <label style="margin-top: 50px">
+                <span>昵称</span>
+                <input type="text" value="成龙" onblur="c()" onfocus="c1()" id="login_username"/>
+                <span style="visibility: hidden; color: #d4af7a" id="err_name"><b>请输入用户名</b></span>
+            </label>
+            <br>
+            <label>
+                <span>密码</span>
+                <input type="password" value="123456" onblur="d()" onfocus="d1()" id="login_password"/>
+                <span style="visibility: hidden; color: #d4af7a" id="err_passwd"><b>请输入秘密(不能包含特殊字符)</b></span>
+            </label>
+            <button type="button" class="submit" id="login" style="margin-top: 40px">登录</button>
+            <button type="button" class="fb-btn" style="margin-top: 32px">忘记密码</button>
+        </form>
+    </div>
+    <div class="sub-cont">
+        <div class="img">
+            <div class="img__text m--up">
+                <h2>新用户？</h2>
+                <p>注册并发现更多新机会！</p>
+            </div>
+            <div class="img__text m--in">
+                <h2>我们中的一员？</h2>
+                <p>如果您已有帐户，请登录。我们非常欢迎您！</p>
+            </div>
+            <div class="img__btn">
+                <span class="m--up" id="page_register">注册</span>
+                <span class="m--in" id="page_login">登录</span>
+            </div>
+        </div>
+        <div class="form sign-up">
+            <h2>注册</h2>
+            <form>
+                <label style="margin-top: 18px">
+                    <span>昵称</span>
+                    <input type="text"  onblur="e()" onfocus="e1()" id="nickname"/>
+                    <span id="err_userName" style="visibility: hidden; color: #d4af7a">请输入昵称</span>
+                </label>
+                <label style="margin-top: 18px">
+                    <span>性别</span>
+                    <input type="text" onblur="s()" onfocus="s1()" id="sex" />
+                    <span id="err_sex" style="visibility: hidden; color: #d4af7a">请输入性别（男/女）</span>
+                </label>
+                <label style="margin-top: 18px">
+                    <span>密码</span>
+                    <input type="password"  onblur="g()" onfocus="g1()" id="password"/>
+                    <span style="visibility: hidden; color: #d4af7a" id="err_pwd">请输入密码</span>
+                </label>
+                <label style="margin-top: 18px">
+                    <span>再次输入密码</span>
+                    <input type="password"  onblur="h()" onfocus="h1()" id="password_again"/>
+                    <span style="visibility: hidden; color: #d4af7a" id="err_cfpwd">请输入和上面相同的密码</span>
+                    <button type="button" class="submit" id="sub" style="margin-top: 26px">确认</button>
+                </label>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="vendor/bootstrap/js/index.js"></script>
+<script>
+
+
+    function c() {
+        if (document.getElementById("login_username").value=="") {
+            document.getElementById("err_name").style.visibility="visible";
+            // alert("你好");
+        }
+    }
+
+    function c1() {
+        document.getElementById("err_name") .style.visibility="hidden";
+    }
+
+    function d() {
+        if (document.getElementById("login_password").value=="") {
+            document.getElementById("err_passwd").style.visibility="visible";
+        }
+    }
+
+    function d1() {
+        document.getElementById("err_passwd") .style.visibility="hidden";
+    }
+
+    function e() {
+        if (document.getElementById("nickname").value=="") {
+            document.getElementById("err_userName").style.visibility="visible";
+        }
+    }
+
+    function e1() {
+        document.getElementById("err_userName").style.visibility="hidden";
+    }
+
+    function s() {
+        if(document.getElementById("sex").value == "") {
+            document.getElementById("err_sex").style.visibility = "visible";
+        }
+    }
+
+    function s1() {
+        document.getElementById("err_sex").style.visibility="hidden";
+        }
+
+    function g() {
+        if (document.getElementById("password").value=="") {
+            document.getElementById("err_pwd").style.visibility="visible";
+        }
+    }
+
+    function g1() {
+        document.getElementById("err_pwd").style.visibility="hidden";
+    }
+
+    function h() {
+        if (document.getElementById("password_again").value=="") {
+            document.getElementById("err_cfpwd").style.visibility="visible";
+        }
+    }
+
+    function h1() {
+        document.getElementById("err_cfpwd").style.visibility="hidden";
+    }
+    </script>
+<script>
+
+
+    $(function () {
+
+        $(".cont.s--signup .img__btn span.m--up").click(function(){
+            alert("你好");
+        });
+
+       $(document).keydown(function (event) {
+           if(event.keyCode==13){
+               $("#login").click();
+           }
+       });
+
+        $("#login").click(function () {
+            var nickname = $("#login_username").val();
+            var password = $("#login_password").val();
+
+            $.ajax({
+                url: "/loginUserById",
+                type: "post",
+                dataType: 'json',
+                async: false,
+                data: {
+                    "nickname": nickname,
+                    "password": password
+                },
+                success: function (data) {
+                    if (data == 1)
+                        window.location.href = '/pageHome';
+                    else
+                        alert("登陆失败");
+                },
+                error: function () {
+                    alert("请求失败");
+                }
+            })
+        });
+        $("#sub").click(function () {
+            var username = $("#nickname").val();
+            var sex = $("#sex").val();
+            var pwd = $("#password").val();
+            var pwd_again = $("#password_again").val();
+
+            if(username=="")
+            {
+                alert("请输入昵称");
+                return;
+            }
+            if(pwd==""){
+                alert("请输入密码");
+                return;
+            }
+            if(pwd_again==""){
+                alert("请再次输入密码");
+                return;
+            }
+            if (pwd_again==pwd) {
+                $.ajax({
+                    url: "/addUser",
+                    type: "post",
+                    dataType: "json",
+                    data: {
+                        "nickname":username,
+                        "password":pwd,
+                        "sex":sex
+                    },
+                    success: function (data) {
+                        $("#page_login").click();
+                    }, error: function () {
+
+                    }
+                })
+            } else {
+                alert("两次密码不一致");
+            }
+        })
+
+    })
+</script>
+</body>
+</html>
