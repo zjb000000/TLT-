@@ -1,0 +1,254 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<title>人才薪资展示</title>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+	<!-- VENDOR CSS -->
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="vendor/font-awesome/css/font-awesome.min.css">
+	<link rel="stylesheet" href="vendor/linearicons/style.css">
+	<!-- MAIN CSS -->
+	<link rel="stylesheet" href="css/main.css">
+	<!-- FOR DEMO PURPOSES ONLY. You should remove this in your project -->
+	<link rel="stylesheet" href="css/demo.css">
+	<!-- GOOGLE FONTS -->
+	<link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700" rel="stylesheet">
+	<!-- ICONS -->
+	<link rel="apple-touch-icon" sizes="76x76" href="img/apple-icon.png">
+	<link rel="icon" type="image/png" sizes="96x96" href="img/favicon.png">
+</head>
+<style type="text/css">
+
+	table.hovertable {}
+	table.hovertable td {
+		width: 333px;
+	}
+</style>
+
+<body>
+	<!-- WRAPPER -->
+	<div id="wrapper">
+		<!-- NAVBAR -->
+		<nav class="navbar navbar-default navbar-fixed-top">
+			<div class="brand">
+				<a href="/aboutUs"><img src="img/logo.png" alt="Klorofil Logo" class="img-responsive logo"></a>
+			</div>
+			<div class="container-fluid">
+				<div class="navbar-btn">
+					<button type="button" class="btn-toggle-fullwidth"><i class="lnr lnr-arrow-left-circle"></i></button>
+				</div>
+				<div id="navbar-menu">
+					<ul class="nav navbar-nav navbar-right">
+						<li class="dropdown">
+							<a href="#" class="dropdown-toggle icon-menu" data-toggle="dropdown">
+								<i class="lnr lnr-alarm"></i>
+								<span class="badge bg-danger">5</span>
+							</a>
+						</li>
+						<li class="dropdown">
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown">
+								<img src="img/user.png" class="img-circle" alt="Avatar">
+								<span th:text="${session.user.nickname}"></span>
+								<i class="icon-submenu lnr lnr-chevron-down"></i></a>
+							<ul class="dropdown-menu">
+								<li>
+									<a href="/editUserInfo">
+										<i class="lnr lnr-user">
+										</i>
+										<span>个人信息</span>
+									</a>
+								</li>
+								<li>
+									<a href="/index">
+										<i class="lnr lnr-envelope"></i>
+										<span onclick="drop()">注销
+										</span>
+									</a>
+								</li>
+							</ul>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</nav>
+		<!-- END NAVBAR -->
+		<!-- LEFT SIDEBAR -->
+		<div id="sidebar-nav" class="sidebar">
+			<div class="sidebar-scroll">
+				<nav>
+					<ul class="nav">
+						<li><a href="/homePage" class=""><i class="lnr lnr-home"></i> <span>主页</span></a></li>
+						<li>
+							<a href="#subPages" data-toggle="collapse" class="collapsed"><i class="lnr lnr-file-empty"></i> <span>信息检索</span> <i class="icon-submenu lnr lnr-chevron-left"></i></a>
+							<div id="subPages" class="collapse ">
+								<ul class="nav">
+									<li><a th:href="@{/searchArea}" th:if="${session.role.geoSearch}==1">地域检索</a></li>
+									<li><a th:href="@{/searchPosition}" th:if="${session.role.jobSearch}==1">热门职位检索</a></li>
+									<li><a th:href="@{/searchSalary}" th:if="${session.role.salSearch}==1">薪资信息检索</a></li>
+
+								</ul></div>
+						</li>
+						<li>
+							<a href="#subPages1" data-toggle="collapse" class="collapsed"><i class="lnr lnr-code"></i> <span>人才情况展示</span> <i class="icon-submenu lnr lnr-chevron-left"></i></a>
+							<div id="subPages1" class="collapse in">
+								<ul class="nav">
+									<li><a th:href="@{/showPosition}" th:if="${session.role.occDis}==1">职业占比展示</a></li>
+									<li><a th:href="@{/showEducation}" th:if="${session.role.eduDis}==1">学历情况展示</a></li>
+									<li><a th:href="@{/showOrderedSalary}" th:if="${session.role.talDis}==1">人才薪资展示</a></li>
+									<li><a th:href="@{/showArea}" th:if="${session.role.geoDis}==1">地域类型展示</a></li>
+								</ul>
+							</div>
+						</li>
+						<li><a href="/aboutUs" class=""><i class="lnr lnr-linearicons"></i> <span>关于我们</span></a></li>
+					</ul>
+				</nav>
+			</div>
+		</div>
+		<!-- END LEFT SIDEBAR -->
+		<!-- MAIN -->
+		<div class="main">
+			<!-- MAIN CONTENT -->
+			<div class="main-content">
+				<div class="container-fluid">
+					<h3 class="page-title" style="margin-bottom: 0">人才薪资展示</h3>
+					<label id="posi-context"></label>
+					<!-- END CONTEXTUAL -->
+					<br>
+					<!-- POSITION -->
+					<div class="row">
+						<div class="col-md-12">
+							<!-- BASIC TABLE -->
+							<div class="panel">
+								<div class="panel-heading">
+									<h3 class="panel-title">表格展示</h3>
+								</div>
+								<div class="panel-body" style="margin-bottom: 0;padding-bottom: 0">
+									<table class="table" style="margin-bottom: 0">
+										<thead>
+										<tr>
+											<th style="width: 333px">排名</th>
+											<th style="width: 333px">薪资水平</th>
+											<th style="width: 333px">职位名称</th>
+											<th style="width: 333px">年限</th>
+										</tr>
+                                        </thead>
+									</table>
+								</div>
+								<div class="panel-body" style="padding-top: 0">
+									<table class="table hovertable" id="tableMessInfo">
+									</table>
+								</div>
+								<table width="60%" align="right" style="margin-top: 5px">
+								<tr><td><div id="barcon"></div></td></tr>
+								</table>
+							</div>
+							<!-- END BASIC TABLE -->
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- END MAIN -->
+		<div class="clearfix"></div>
+		<footer>
+			<div class="container-fluid">
+				<p class="copyright">Copyright &copy; 2019.Company TLT人才大数据分析平台 All rights reserved.</p>
+			</div>
+		</footer>
+	</div>
+
+	<!-- END WRAPPER -->
+	<!-- Javascript -->
+	<script src="vendor/jquery/jquery.min.js"></script>
+	<script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+	<script src="vendor/jquery-slimscroll/jquery.slimscroll.min.js"></script>
+	<script src="scripts/klorofil-common.js"></script>
+    <script th:inline="javaScript">
+        window.onload = function () {
+            $.ajax({
+                url: "/showOrderedInfo",
+                type: "post",
+                dataType: 'json',
+                async: false,
+                data: {
+                    "data": "123456"
+                },
+                success: function (data) {
+
+                    $("#tableMessInfo").empty();
+                    console.log(data);
+                    for (var i = 0; i < 50; i++) {
+
+                        var tdNum = $("<td>" + (i + 1) + "</td>");
+                        var tdSalary = $("<td>" + data[i]["info"]["minSalary"] + "-" + data[i]["info"]["maxSalary"] + "</td>");
+                        var tdJobTitle = $("<td>" + data[i]["function"] + "</td>");
+                        var experienceYear = $("<td>" + data[i]["info"]["experience_year"] + "</td>");
+                        var tr = $("<tr></tr>");
+                        tr.append(tdNum);
+                        tr.append(tdSalary);
+                        tr.append(tdJobTitle);
+                        tr.append(experienceYear);
+                        $("#tableMessInfo").append(tr);
+                    }
+                    goPage(1,10);
+                },
+                error: function () {
+                    alert("数据请求失败");
+                }
+            })
+        }
+
+    </script>
+</body>
+<script>
+    function goPage(pno,psize){
+        var itable = document.getElementById("tableMessInfo");
+        var num = itable.rows.length;//表格所有行数(所有记录数)
+        console.log(num);
+        var totalPage = 0;//总页数
+        var pageSize = psize;//每页显示行数
+        //总共分几页
+        if(num/pageSize > parseInt(num/pageSize)){
+            totalPage=parseInt(num/pageSize)+1;
+        }else{
+            totalPage=parseInt(num/pageSize);
+        }
+        var currentPage = pno;//当前页数
+        var startRow = (currentPage - 1) * pageSize+1;//开始显示的行  31
+        var endRow = currentPage * pageSize;//结束显示的行   40
+        endRow = (endRow > num)? num : endRow;
+        console.log(endRow);
+        //遍历显示数据实现分页
+        for(var i=1;i<(num+1);i++){
+            var irow = itable.rows[i-1];
+            if(i>=startRow && i<=endRow){
+                irow.style.display = "block";
+            }else{
+                irow.style.display = "none";
+            }
+        }
+        var pageEnd = document.getElementById("pageEnd");
+        var tempStr = "共"+num+"条记录 分"+totalPage+"页 当前第"+currentPage+"页";
+        if(currentPage>1){
+            tempStr += "<a href=\"#\" onClick=\"goPage("+(1)+","+psize+")\">首页</a>";
+            tempStr += "<a href=\"#\" onClick=\"goPage("+(currentPage-1)+","+psize+")\"><上一页</a>"
+        }else{
+            tempStr += "首页";
+            tempStr += "<上一页";
+        }
+
+        if(currentPage<totalPage){
+            tempStr += "<a href=\"#\" onClick=\"goPage("+(currentPage+1)+","+psize+")\">下一页></a>";
+            tempStr += "<a href=\"#\" onClick=\"goPage("+(totalPage)+","+psize+")\">尾页</a>";
+        }else{
+            tempStr += "下一页>";
+            tempStr += "尾页";
+        }
+
+        document.getElementById("barcon").innerHTML = tempStr;
+
+    }
+
+</script>
+</html>

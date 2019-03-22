@@ -1,0 +1,649 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<title>主页</title>
+	<meta charset="utf-8">
+	<meta http-equiv="content-Type" content="text/html;charset=gb2312">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+	<!-- VENDOR CSS -->
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="vendor/font-awesome/css/font-awesome.min.css">
+	<link rel="stylesheet" href="vendor/linearicons/style.css">
+	<link rel="stylesheet" href="vendor/chartist/css/chartist-custom.css">
+	<!-- MAIN CSS -->
+	<link rel="stylesheet" href="css/main.css">
+	<!-- FOR DEMO PURPOSES ONLY. You should remove this in your project -->
+	<link rel="stylesheet" href="css/demo.css">
+	<!-- GOOGLE FONTS -->
+	<link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700" rel="stylesheet">
+	<!-- ICONS -->
+	<link rel="apple-touch-icon" sizes="76x76" href="img/apple-icon.png">
+	<link rel="icon" type="image/png" sizes="96x96" href="img/favicon.png">
+</head>
+
+<body onload="SayHello()">
+	<!-- WRAPPER -->
+	<div id="wrapper">
+		<!-- NAVBAR -->
+		<nav class="navbar navbar-default navbar-fixed-top">
+			<div class="brand">
+				<a href="/aboutUs"><img src="img/logo.png" alt="TLT Logo" class="img-responsive logo"></a>
+			</div>
+			<div class="container-fluid">
+				<div class="navbar-btn">
+					<button type="button" class="btn-toggle-fullwidth"><i class="lnr lnr-arrow-left-circle"></i></button>
+				</div>
+				<div id="navbar-menu">
+					<ul class="nav navbar-nav navbar-right">
+						<li class="dropdown">
+							<a href="#" class="dropdown-toggle icon-menu" data-toggle="dropdown">
+								<i class="lnr lnr-alarm"></i>
+								<span class="badge bg-danger">5</span>
+							</a>
+						</li>
+						<li class="dropdown">
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown">
+								<img src="img/user.png" class="img-circle" alt="Avatar">
+								<span id="nameForHello" th:text="${session.user.nickname}"></span>
+								<i class="icon-submenu lnr lnr-chevron-down"></i></a>
+							<ul class="dropdown-menu">
+								<li>
+									<a href="/editUserInfo">
+										<i class="lnr lnr-user">
+										</i>
+									<span>个人信息</span>
+									</a>
+								</li>
+								<li>
+									<a href="/index">
+										<i class="lnr lnr-envelope"></i>
+										<span onclick="drop()">注销
+										</span>
+									</a>
+								</li>
+							</ul>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</nav>
+		<!-- END NAVBAR -->
+		<!-- LEFT SIDEBAR -->
+		<div id="sidebar-nav" class="sidebar">
+			<div class="sidebar-scroll">
+				<nav>
+					<ul class="nav">
+						<li><a href="/homePage" class=""><i class="lnr lnr-home"></i> <span>主页</span></a></li>
+						<li>
+							<a href="#subPages" data-toggle="collapse" class="collapsed"><i class="lnr lnr-file-empty"></i> <span>信息检索</span> <i class="icon-submenu lnr lnr-chevron-left"></i></a>
+							<div id="subPages" class="collapse ">
+								<ul class="nav">
+									<li><a th:href="@{/searchArea}" th:if="${session.role.geoSearch}==1">地域检索</a></li>
+									<li><a th:href="@{/searchPosition}" th:if="${session.role.jobSearch}==1">热门职位检索</a></li>
+									<li><a th:href="@{/searchSalary}" th:if="${session.role.salSearch}==1">薪资信息检索</a></li>
+
+							</ul></div>
+						</li>
+						<li>
+							<a href="#subPages1" data-toggle="collapse" class="collapsed"><i class="lnr lnr-code"></i> <span>人才情况展示</span> <i class="icon-submenu lnr lnr-chevron-left"></i></a>
+							<div id="subPages1" class="collapse ">
+								<ul class="nav">
+									<li><a th:href="@{/showPosition}" th:if="${session.role.occDis}==1">职业占比展示</a></li>
+									<li><a th:href="@{/showEducation}" th:if="${session.role.eduDis}==1">学历情况展示</a></li>
+									<li><a th:href="@{/showOrderedSalary}" th:if="${session.role.talDis}==1">人才薪资展示</a></li>
+									<li><a th:href="@{/showArea}" th:if="${session.role.geoDis}==1">地域类型展示</a></li>
+								</ul>
+							</div>
+						</li>
+						<li><a href="/aboutUs" class=""><i class="lnr lnr-linearicons"></i> <span>关于我们</span></a></li>
+					</ul>
+				</nav>
+			</div>
+		</div>
+		<!-- END LEFT SIDEBAR -->
+		<!--main-->
+		<div class="main">
+			<!-- MAIN CONTENT -->
+			<div class="main-content">
+				<div class="container-fluid">
+					<!-- OVERVIEW -->
+					<div class="panel panel-headline">
+						<div class="panel-heading">
+							<h3 class="panel-title">每日一览</h3>
+							<p class="panel-subtitle" id="timeDis"></p>
+						</div>
+						<div class="panel-body">
+							<div class="row">
+								<div class="col-md-3">
+									<div class="metric">
+										<span class="icon"><i class="fa fa-download"></i></span>
+										<p>
+											<span class="number">1,252</span>
+											<span class="title">用户数</span>
+										</p>
+									</div>
+								</div>
+								<div class="col-md-3">
+									<div class="metric">
+										<span class="icon"><i class="fa fa-shopping-bag"></i></span>
+										<p>
+											<span class="number">203</span>
+											<span class="title">城市分布</span>
+										</p>
+									</div>
+								</div>
+								<div class="col-md-3">
+									<div class="metric">
+										<span class="icon"><i class="fa fa-eye"></i></span>
+										<p>
+											<span class="number">274,678</span>
+											<span class="title">访问数</span>
+										</p>
+									</div>
+								</div>
+								<div class="col-md-3">
+									<div class="metric">
+										<span class="icon"><i class="fa fa-bar-chart"></i></span>
+										<p>
+											<span class="number">85%</span>
+											<span class="title">满意度</span>
+										</p>
+									</div>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-md-9">
+									<div id="headline-chart" class="ct-chart"></div>
+								</div>
+								<div class="col-md-3">
+									<div class="weekly-summary text-right">
+										<span class="number">274,678</span> <span class="percentage"><i class="fa fa-caret-up text-success"></i> 3%</span>
+										<span class="info-label">总访问数</span>
+									</div>
+									<div class="weekly-summary text-right">
+										<span class="number">203</span> <span class="percentage"><i class="fa fa-caret-up text-success"></i> 5%</span>
+										<span class="info-label">分布城市</span>
+									</div>
+									<div class="weekly-summary text-right">
+										<span class="number">85%</span> <span class="percentage"><i class="fa fa-caret-down text-danger"></i> 1%</span>
+										<span class="info-label">满意度</span>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<!-- END OVERVIEW -->
+					<div class="row">
+						<div class="col-md-6">
+							<!-- RECENT PURCHASES -->
+							<div class="panel">
+								<div class="panel-heading">
+									<h3 class="panel-title">使用次数排名</h3>
+									<div class="right">
+										<button type="button" class="btn-toggle-collapse"><i class="lnr lnr-chevron-up"></i></button>
+										<button type="button" class="btn-remove"><i class="lnr lnr-cross"></i></button>
+									</div>
+								</div>
+								<div class="panel-body no-padding">
+									<table class="table table-striped">
+										<thead>
+										<tr>
+											<th>排名</th>
+											<th>用户</th>
+											<th>使用次数</th>
+											<th>最近使用日期</th>
+											<th>状态</th>
+										</tr>
+										</thead>
+										<tbody>
+										<tr>
+											<td><a href="#">1</a></td>
+											<td>莉莉</td>
+											<td>122</td>
+											<td>2019年3月17日</td>
+											<td><span class="label label-success">上升</span></td>
+										</tr>
+										<tr>
+											<td><a href="#">2</a></td>
+											<td>卧春</td>
+											<td>62</td>
+											<td>2019年3月17日</td>
+											<td><span class="label label-warning">不变</span></td>
+										</tr>
+										<tr>
+											<td><a href="#">3</a></td>
+											<td>暗梅</td>
+											<td>34</td>
+											<td>2019年3月17日</td>
+											<td><span class="label label-danger">下降</span></td>
+										</tr>
+										<tr>
+											<td><a href="#">4</a></td>
+											<td>英俊</td>
+											<td>18</td>
+											<td>2019年3月17日</td>
+											<td><span class="label label-success">上升</span></td>
+										</tr>
+										<tr>
+											<td><a href="#">5</a></td>
+											<td>悟空</td>
+											<td>12</td>
+											<td>2019年3月17日</td>
+											<td><span class="label label-success">上升</span></td>
+										</tr>
+										</tbody>
+									</table>
+								</div>
+								<div class="panel-footer">
+									<div class="row">
+										<div class="col-md-6"><span class="panel-note"><i class="fa fa-clock-o"></i> 最近二十四小时</span></div>
+										<div class="col-md-6 text-right"><a href="#" class="btn btn-primary">查看所有排名</a></div>
+									</div>
+								</div>
+							</div>
+							<!-- END RECENT PURCHASES -->
+						</div>
+						<div class="col-md-6">
+							<!-- MULTI CHARTS -->
+							<div class="panel">
+								<div class="panel-heading">
+									<h3 class="panel-title">平台预期与计划任务数（点为预期）</h3>
+									<div class="right">
+										<button type="button" class="btn-toggle-collapse"><i class="lnr lnr-chevron-up"></i></button>
+										<button type="button" class="btn-remove"><i class="lnr lnr-cross"></i></button>
+									</div>
+								</div>
+								<div class="panel-body">
+									<div id="visits-trends-chart" class="ct-chart"></div>
+								</div>
+							</div>
+							<!-- END MULTI CHARTS -->
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-4" style="height:430px">
+							<!-- TASKS -->
+							<div class="panel">
+								<div class="panel-heading">
+									<h3 class="panel-title">待完成项目</h3>
+									<div class="right">
+										<button type="button" class="btn-toggle-collapse"><i class="lnr lnr-chevron-up"></i></button>
+										<button type="button" class="btn-remove"><i class="lnr lnr-cross"></i></button>
+									</div>
+								</div>
+								<div class="panel-body" style="height:430px">
+									<ul class="list-unstyled task-list">
+										<li>
+											<p>添加用户交友功能模块<span class="label-percent">23%</span></p>
+											<div class="progress progress-xs">
+												<div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="23" aria-valuemin="0" aria-valuemax="100" style="width:23%">
+													<span class="sr-only">23% Complete</span>
+												</div>
+											</div>
+										</li>
+										<li>
+											<p>添加用户显示位置模块<span class="label-percent">80%</span></p>
+											<div class="progress progress-xs">
+												<div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100" style="width: 80%">
+													<span class="sr-only">80% Complete</span>
+												</div>
+											</div>
+										</li>
+										<li>
+											<p>修复数据重复问题<span class="label-percent">99%</span></p>
+											<div class="progress progress-xs">
+												<div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
+													<span class="sr-only">99% Complete</span>
+												</div>
+											</div>
+										</li>
+										<li>
+											<p>移动端移植<span class="label-percent">45%</span></p>
+											<div class="progress progress-xs">
+												<div class="progress-bar progress-bar-warning" role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100" style="width: 45%">
+													<span class="sr-only">45% Complete</span>
+												</div>
+											</div>
+										</li>
+										<li>
+											<p>开拓南极洲市场<span class="label-percent">10%</span></p>
+											<div class="progress progress-xs">
+												<div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100" style="width: 10%">
+													<span class="sr-only">10% Complete</span>
+												</div>
+											</div>
+										</li>
+									</ul>
+								</div>
+							</div>
+							<!-- END TASKS -->
+						</div>
+						<div class="col-md-4" style="height:365px">
+							<!-- TIMELINE -->
+							<div class="panel panel-scrolling">
+								<div class="panel-heading">
+									<h3 class="panel-title">最近用户活动</h3>
+									<div class="right">
+										<button type="button" class="btn-toggle-collapse"><i class="lnr lnr-chevron-up"></i></button>
+										<button type="button" class="btn-remove"><i class="lnr lnr-cross"></i></button>
+									</div>
+								</div>
+								<div class="panel-body" style="height:365px">
+									<ul class="list-unstyled activity-list">
+										<li>
+											<img src="assets/img/user1.png" alt="Avatar" class="img-circle pull-left avatar">
+											<p><a href="#">贾科斯</a>查看个人主页 <span class="timestamp">2 minutes ago</span></p>
+										</li>
+										<li>
+											<img src="assets/img/user2.png" alt="Avatar" class="img-circle pull-left avatar">
+											<p><a href="#">叶伏天</a>使用<a href="#">薪资展示</a> <span class="timestamp">3 minutes ago</span></p>
+										</li>
+										<li>
+											<img src="assets/img/user3.png" alt="Avatar" class="img-circle pull-left avatar">
+											<p><a href="#">阿波罗</a>使用<a href="#">薪资展示</a> <span class="timestamp">5 minutes ago</span></p>
+										</li>
+										<li>
+											<img src="assets/img/user4.png" alt="Avatar" class="img-circle pull-left avatar">
+											<p><a href="#">英俊哥</a>修改个人信息<span class="timestamp">10 minutes ago</span></p>
+										</li>
+										<li>
+											<img src="assets/img/user5.png" alt="Avatar" class="img-circle pull-left avatar">
+											<p><a href="#">Jason</a> started a discussion about <a href="#">Weekly Meeting</a> <span class="timestamp">10 minutes ago</span></p>
+										</li>
+									</ul>
+									<button type="button" class="btn btn-primary btn-bottom center-block">展示更多</button>
+								</div>
+							</div>
+							<!-- END TIMELINE -->
+						</div>
+						<div class="col-md-4" style="height:430px">
+							<!-- VISIT CHART -->
+							<div class="panel">
+								<div class="panel-heading" >
+									<h3 class="panel-title">网站访问量（最近一周）</h3>
+									<div class="right" style="height:430px">
+										<button type="button" class="btn-toggle-collapse"><i class="lnr lnr-chevron-up"></i></button>
+										<button type="button" class="btn-remove"><i class="lnr lnr-cross"></i></button>
+									</div>
+								</div>
+								<div class="panel-body" style="height:430px">
+									<div id="visits-chart" class="ct-chart"></div>
+								</div>
+							</div>
+							<!-- END VISIT CHART -->
+						</div>
+					</div>
+					<div class="row">
+					</div>
+				</div>
+			</div>
+			<!-- END MAIN CONTENT -->
+		</div>
+		<!--end main-->
+	</div>
+		<div class="clearfix"></div>
+
+		<footer>
+			<div class="container-fluid" style="margin-top: 20px">
+				<p class="copyright">Copyright &copy; 2019.Company TLT人才大数据分析平台 All rights reserved.</p>
+			</div>
+		</footer>
+	<!-- END WRAPPER -->
+	<!-- Javascript -->
+	<script src="vendor/jquery/jquery.min.js"></script>
+	<script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+	<script src="vendor/jquery-slimscroll/jquery.slimscroll.min.js"></script>
+	<script src="vendor/jquery.easy-pie-chart/jquery.easypiechart.min.js"></script>
+	<script src="vendor/chartist/js/chartist.min.js"></script>
+	<script src="scripts/klorofil-common.js"></script>
+	<script language="javascript" type="text/javascript">
+        var h5courseEle = document.getElementById('timeDis');
+
+        // 实例化时间对象
+        var date = new Date();
+        // 获取年份
+        var y = date.getFullYear();
+        // 获取月份
+        var m = date.getMonth() + 1;
+        // 获取日
+        var d = date.getDate();
+
+        // 在网页中显示时间：
+        h5courseEle.innerHTML = y + '年' + m + '月' + d + '日';
+	</script>
+	<script>
+		// function displayOrnot() {
+		// 	if(${session.}=){
+		// 	    document.getElementById("seArea").style.display="none";
+		// 	}
+        // }
+	</script>
+	<script th:inline="javaScript">
+
+		function drop(){
+
+		}
+		$(document).ready(function () {
+		    $("#showSalary").click(function () {
+                $.ajax({
+                    url: "/showOrderedSalary",
+                    type: "get",
+                    dataType: 'json',
+                    async: false,
+                    data: {
+                    }
+                })
+            })
+        });
+
+
+        $(document).ready(function () {
+            $("#showEdu").click(function () {
+                $.ajax({
+                    url: "/showEducation",
+                    type: "get",
+                    dataType: 'json',
+                    async: false,
+                    data: {
+                    }
+                })
+            })
+        })
+
+	$(function() {
+		var data, options;
+
+		// headline charts
+		data = {
+			labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+			series: [
+				[23, 29, 24, 40, 25, 24, 35],
+				[14, 25, 18, 34, 29, 38, 44],
+			]
+		};
+
+		options = {
+			height: 300,
+			showArea: true,
+			showLine: false,
+			showPoint: false,
+			fullWidth: true,
+			axisX: {
+				showGrid: false
+			},
+			lineSmooth: false,
+		};
+
+		new Chartist.Line('#headline-chart', data, options);
+
+
+		// visits trend charts
+		data = {
+			labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+			series: [{
+				name: 'series-real',
+				data: [200, 380, 350, 320, 410, 450, 570, 400, 555, 620, 750, 900],
+			}, {
+				name: 'series-projection',
+				data: [240, 350, 360, 380, 400, 450, 480, 523, 555, 600, 700, 800],
+			}]
+		};
+
+		options = {
+			fullWidth: true,
+			lineSmooth: false,
+			height: "270px",
+			low: 0,
+			high: 'auto',
+			series: {
+				'series-projection': {
+					showArea: true,
+					showPoint: false,
+					showLine: false
+				}
+			},
+			axisX: {
+				showGrid: false
+
+			},
+			axisY: {
+				showGrid: false,
+				onlyInteger: true,
+				offset: 0
+			},
+			chartPadding: {
+				left: 20,
+				right: 20
+			}
+		};
+
+		new Chartist.Line('#visits-trends-chart', data, options);
+
+
+		// visits chart
+		data = {
+			labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+			series: [
+				[6384, 6342, 5437, 2764, 3958, 5068, 7654]
+			]
+		};
+
+		options = {
+			height: 300,
+			axisX: {
+				showGrid: false
+			},
+		};
+
+		new Chartist.Bar('#visits-chart', data, options);
+
+
+		// real-time pie chart
+		var sysLoad = $('#system-load').easyPieChart({
+			size: 130,
+			barColor: function(percent) {
+				return "rgb(" + Math.round(200 * percent / 100) + ", " + Math.round(200 * (1.1 - percent / 100)) + ", 0)";
+			},
+			trackColor: 'rgba(245, 245, 245, 0.8)',
+			scaleColor: false,
+			lineWidth: 5,
+			lineCap: "square",
+			animate: 800
+		});
+
+		var updateInterval = 3000; // in milliseconds
+
+		setInterval(function() {
+			var randomVal;
+			randomVal = getRandomInt(0, 100);
+
+			sysLoad.data('easyPieChart').update(randomVal);
+			sysLoad.find('.percent').text(randomVal);
+		}, updateInterval);
+
+		function getRandomInt(min, max) {
+			return Math.floor(Math.random() * (max - min + 1)) + min;
+		}
+
+	});
+	</script>
+<script  th:inline="javaScript">
+    function SayHello() {
+
+        var username = document.getElementById('nameForHello').innerHTML;
+        var str = "欢迎您："+username;
+        var msgw,msgh,bordercolor;
+        msgw=450;
+        msgh=100;
+        titleheight=45;
+        bordercolor="#336699";
+        titlecolor="#99CCFF";
+        var sWidth,sHeight;
+        sWidth = document.body.offsetWidth;
+        sHeight = document.body.offsetHeight;
+        //背景div
+        var bgObj=document.createElement("div");
+        bgObj.setAttribute('id','alertbgDiv');
+        bgObj.style.position="absolute";
+        bgObj.style.top="0";
+        bgObj.style.background="#E8E8E8";
+        bgObj.style.filter="progid:DXImageTransform.Microsoft.Alpha(style=3,opacity=25,finishOpacity=75";
+        bgObj.style.opacity="0.6";
+        bgObj.style.left="0";
+        bgObj.style.width = sWidth + "px";
+        bgObj.style.height = sHeight + "px";
+        bgObj.style.zIndex = "10000";
+        document.body.appendChild(bgObj);
+        //创建提示窗口的div
+        var msgObj = document.createElement("div");
+        msgObj.setAttribute("id","alertmsgDiv");
+        msgObj.setAttribute("align","center");
+        msgObj.style.background="white";
+        msgObj.style.border="1px solid " + bordercolor;
+        msgObj.style.position = "absolute";
+        msgObj.style.left = "50%";
+        msgObj.style.font="12px/1.6em Verdana, Geneva, Arial, Helvetica, sans-serif";
+        msgObj.style.marginLeft = "-105px";
+
+        msgObj.style.top = document.body.scrollTop+(window.screen.availHeight/2)-150 +"px";
+        msgObj.style.width = msgw + "px";
+        msgObj.style.height = msgh + "px";
+        msgObj.style.textAlign = "center";
+        msgObj.style.lineHeight ="25px";
+        msgObj.style.zIndex = "10001";
+        document.body.appendChild(msgObj);
+        //提示信息标题
+        var title=document.createElement("h4");
+        title.setAttribute("id","alertmsgTitle");
+        title.setAttribute("align","left");
+        title.style.margin="0";
+        title.style.padding="3px";
+        title.style.background = bordercolor;
+        title.style.filter="progid:DXImageTransform.Microsoft.Alpha(startX=20, startY=20, finishX=100, finishY=100,style=1,opacity=75,finishOpacity=100);";
+        title.style.opacity="0.75";
+        title.style.border="1px solid " + bordercolor;
+        title.style.height="23px";
+        title.style.font="12px Verdana, Geneva, Arial, Helvetica, sans-serif";
+        title.style.color="white";
+        title.innerHTML="来自TLT提示：";
+        document.getElementById("alertmsgDiv").appendChild(title);
+        //提示信息
+        var txt = document.createElement("p");
+        txt.setAttribute("id","msgTxt");
+        txt.style.margin="16px 0";
+        txt.innerHTML = str;
+        document.getElementById("alertmsgDiv").appendChild(txt);
+        //设置显示时间
+        window.setTimeout("closewin()",2000);
+    }
+    function closewin() {
+        document.body.removeChild(document.getElementById("alertbgDiv"));
+        document.getElementById("alertmsgDiv").removeChild(document.getElementById("alertmsgTitle"));
+        document.body.removeChild(document.getElementById("alertmsgDiv"));
+    }
+</script>
+</body>
+
+</html>

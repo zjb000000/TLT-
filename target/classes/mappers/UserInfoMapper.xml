@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gg.tlt.mapper.UserInfoMapper">
+
+    <resultMap id="userMap" type="com.gg.tlt.model.User">
+        <id column="user_nickname" property="nickname" jdbcType="VARCHAR"/>
+        <id column="user_password" property="password" jdbcType="VARCHAR"/>
+        <id column="user_sex" property="sex" jdbcType="INTEGER"/>
+        <id column="user_id" property="id" jdbcType="INTEGER"/>
+        <id column="role_name" property="roleName" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <resultMap id="roleMap" type="com.gg.tlt.model.Role">
+        <id column="role_name" property="roleName" jdbcType="VARCHAR"/>
+        <id column="geographical_search" property="geoSearch" jdbcType="INTEGER"/>
+        <id column="hot_job_search" property="jobSearch" jdbcType="INTEGER"/>
+        <id column="salary_information_search" property="salSearch" jdbcType="INTEGER"/>
+        <id column="occupation_ratio_display" property="occDis" jdbcType="INTEGER"/>
+        <id column="education_situation_display" property="eduDis" jdbcType="INTEGER"/>
+        <id column="talent_salary_display" property="talDis" jdbcType="INTEGER"/>
+        <id column="geographic_type_display" property="geoDis" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <select id="selectRoleFunc" resultMap="roleMap" parameterType="String">
+        select * from role where role_name = #{roleName}
+    </select>
+
+    <select id="selectAllUsers" resultMap="userMap">
+        select *
+        from user;
+    </select>
+
+    <insert id="insertUser" parameterType="com.gg.tlt.model.User">
+        INSERT INTO `user`(user_nickname, user_password, user_sex,user_id)
+        VALUES (#{nickname}, #{password}, #{sex},#{id});
+    </insert>
+    <update id="updateUserById">
+        UPDATE user
+        SET user_nickname = #{nickname},
+            user_sex      = #{sex},
+            user_password      = #{password}
+        WHERE user_id = #{id}
+    </update>
+    <select id="selectUserPassword" resultMap="userMap" parameterType="String">
+        select *
+        from `user`
+        where user_nickname = #{nickname}
+    </select>
+    <select id="isUserExist" resultMap="userMap" parameterType="String">
+        select *
+        from `user`
+        where user_nickname = #{nickname}
+    </select>
+
+</mapper>

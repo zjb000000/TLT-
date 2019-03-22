@@ -1,0 +1,417 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>热门职位检索</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <!-- VENDOR CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="vendor/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="vendor/linearicons/style.css">
+    <link rel="stylesheet" href="vendor/chartist/css/chartist-custom.css">
+    <!-- MAIN CSS -->
+    <link rel="stylesheet" href="css/main.css">
+    <!-- FOR DEMO PURPOSES ONLY. You should remove this in your project -->
+    <link rel="stylesheet" href="css/demo.css">
+    <!-- GOOGLE FONTS -->
+    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700" rel="stylesheet">
+    <!-- ICONS -->
+    <link rel="apple-touch-icon" sizes="76x76" href="img/apple-icon.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="img/favicon.png">
+</head>
+<style type="text/css">
+
+    table.hovertable {}
+    table.hovertable td {
+        width: 349px;
+    }
+</style>
+<body>
+
+<!-- WRAPPER -->
+<div id="wrapper">
+    <!-- NAVBAR -->
+    <nav class="navbar navbar-default navbar-fixed-top">
+        <div class="brand">
+            <a href="/aboutUs"><img src="img/logo.png" alt="Klorofil Logo" class="img-responsive logo"></a>
+        </div>
+        <div class="container-fluid">
+            <div class="navbar-btn">
+                <button type="button" class="btn-toggle-fullwidth"><i class="lnr lnr-arrow-left-circle"></i></button>
+            </div>
+            <div id="navbar-menu">
+                <ul class="nav navbar-nav navbar-right">
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle icon-menu" data-toggle="dropdown">
+                            <i class="lnr lnr-alarm"></i>
+                            <span class="badge bg-danger">5</span>
+                        </a>
+                    </li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                            <img src="img/user.png" class="img-circle" alt="Avatar">
+                            <span th:text="${session.user.nickname}"></span>
+                            <i class="icon-submenu lnr lnr-chevron-down"></i></a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a href="/editUserInfo">
+                                    <i class="lnr lnr-user">
+                                    </i>
+                                    <span>个人信息</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/index">
+                                    <i class="lnr lnr-envelope"></i>
+                                    <span onclick="drop()">注销
+										</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <!-- END NAVBAR -->
+    <!-- LEFT SIDEBAR -->
+    <div id="sidebar-nav" class="sidebar">
+        <div class="sidebar-scroll">
+            <nav>
+                <ul class="nav">
+                    <li><a href="/homePage" class=""><i class="lnr lnr-home"></i> <span>主页</span></a></li>
+                    <li>
+                        <a href="#subPages" data-toggle="collapse" class="active"><i class="lnr lnr-file-empty"></i> <span>信息检索</span> <i class="icon-submenu lnr lnr-chevron-left"></i></a>
+                        <div id="subPages" class="collapse in">
+                            <ul class="nav">
+                                <li><a th:href="@{/searchArea}" th:if="${session.role.geoSearch}==1">地域检索</a></li>
+                                <li><a th:href="@{/searchPosition}" th:if="${session.role.jobSearch}==1">热门职位检索</a></li>
+                                <li><a th:href="@{/searchSalary}" th:if="${session.role.salSearch}==1">薪资信息检索</a></li>
+
+                            </ul></div>
+                    </li>
+                    <li>
+                        <a href="#subPages1" data-toggle="collapse" class="collapsed"><i class="lnr lnr-code"></i> <span>人才情况展示</span> <i class="icon-submenu lnr lnr-chevron-left"></i></a>
+                        <div id="subPages1" class="collapse ">
+                            <ul class="nav">
+                                <li><a th:href="@{/showPosition}" th:if="${session.role.occDis}==1">职业占比展示</a></li>
+                                <li><a th:href="@{/showEducation}" th:if="${session.role.eduDis}==1">学历情况展示</a></li>
+                                <li><a th:href="@{/showOrderedSalary}" th:if="${session.role.talDis}==1">人才薪资展示</a></li>
+                                <li><a th:href="@{/showArea}" th:if="${session.role.geoDis}==1">地域类型展示</a></li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li><a href="/aboutUs" class=""><i class="lnr lnr-linearicons"></i> <span>关于我们</span></a></li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+    <!-- END LEFT SIDEBAR -->
+
+    <div class="main">
+        <!-- MAIN CONTENT -->
+        <div class="main-content">
+            <div class="row">
+                <div class="container-fluid">
+                    <div class="panel">
+                        <div class="panel-body">
+                            <form class="navbar-form navbar-left" role="search">
+                                <div class="form-group">
+                                    <input type="text" class="form-control" placeholder="请输出要查询的职位名称" id="jobTitle">
+                                </div>
+                                <button type="button" class="btn btn-default" id="search">搜索</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="row" id="charts" style="opacity: 0">
+                    <div class="col-md-12">
+                        <div class="panel">
+                            <div class="panel-heading">
+                                <h3 class="panel-title">表格展示</h3>
+                                <div class="right">
+                                    <button type="button" class="btn-toggle-collapse"><i class="lnr lnr-chevron-up"></i>
+                                    </button>
+                                    <button type="button" class="btn-remove"><i class="lnr lnr-cross"></i></button>
+                                </div>
+                            </div>
+                            <div class="panel-body" style="margin-bottom: 0;padding-bottom: 0">
+                                <table class="table" style="margin-bottom: 0">
+                                    <thead>
+                                    <tr>
+                                        <th style="width: 323px">排名</th>
+                                        <th style="width: 323px">职位名称</th>
+                                        <th style="width: 323px">薪资范围</th>
+                                    </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                            <div class="panel-body" style="padding-top: 0">
+                                <table class="table hovertable" id="tableMessInfo">
+                                </table>
+                            </div>
+                            <table width="60%" align="right" style="margin-top: 5px">
+                            <tr><td><div id="barcon"></div></td></tr>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="panel">
+                            <div class="panel-heading">
+                                <h3 class="panel-title">职位-薪资水平折线图</h3>
+                                <div class="right">
+                                    <button type="button" class="btn-toggle-collapse"><i class="lnr lnr-chevron-up"></i>
+                                    </button>
+                                    <button type="button" class="btn-remove"><i class="lnr lnr-cross"></i></button>
+                                </div>
+                            </div>
+                            <div class="panel-body">
+                                <div id="demo-line-chart" class="ct-chart"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="panel">
+                            <div class="panel-heading">
+                                <h3 class="panel-title">各职位需求量占比扇形图</h3>
+                                <div class="right">
+                                    <button type="button" class="btn-toggle-collapse"><i class="lnr lnr-chevron-up"></i>
+                                    </button>
+                                    <button type="button" class="btn-remove"><i class="lnr lnr-cross"></i></button>
+                                </div>
+                            </div>
+                            <div class="panel-body">
+                                <div id="demo-pie-chart" class="ct-chart"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="clearfix"></div>
+    <footer>
+        <div class="container-fluid">
+            <p class="copyright">Copyright &copy; 2019.Company TLT人才大数据分析平台 All rights reserved.</p>
+        </div>
+    </footer>
+</div>
+<!-- END WRAPPER -->
+
+<!-- Javascript -->
+<script src="vendor/jquery/jquery.min.js"></script>
+<script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+<script src="vendor/jquery-slimscroll/jquery.slimscroll.min.js"></script>
+<script src="vendor/chartist/js/chartist.min.js"></script>
+<script src="scripts/klorofil-common.js"></script>
+<script>
+    $(function () {
+        $("#search").click(function () {
+            var jobTitle = $("#jobTitle").val();
+            var labels = new Array();
+            var series = new Array();
+            $.ajax({
+                url: "/searchPosi",
+                type: "post",
+                dataType: 'json',
+                async: false,
+                data: {
+                    "job": jobTitle
+                },
+                success: function (data) {
+                    console.log(typeof data);
+
+                    $("#tableMessInfo").empty();
+                    var length = 0;
+                    if (data.length < 50) {
+                        length = data.length;
+                    } else {
+                        length = 50
+                    }
+                    for (var i = 0; i < length; i++) {
+                        console.log(data[i]["function"]);
+
+                        var tdNum = $("<td>"+(i+1)+"</td>");
+                        var tdJobTitle = $("<td>"+data[i]["function"]+"</td>");
+                        var tdSalary = $("<td>" + data[i]["info"]["minSalary"] + "-" + data[i]["info"]["maxSalary"]+ "</td>");
+                        var tr = $('<tr></tr>');
+                        tr.append(tdNum);
+                        tr.append(tdJobTitle);
+                        tr.append(tdSalary);
+                        $("#tableMessInfo").append(tr);
+                    }
+                    goPage(1,10);
+
+                    length = 0;
+                    if (data.length < 10) {
+                        length = data.length;
+                    } else {
+                        length = 10
+                    }
+
+                    for (var i = 0; i < length; i++) {
+                        console.log(data[i]["function"]);
+
+                        labels.push(data[i]["function"]);
+                        series.push(data[i]["info"]["numberOfPeople"]);
+                    }
+                        console.log(series);
+                    console.log(labels);
+                    var dataInfo = {
+                        labels: labels,
+                        series: series
+                    };
+
+                    var options = {
+                        height: "300px",
+                        labelInterpolationFnc: function (value) {
+                            return value[0]
+                        }
+                    };
+
+                    var responsiveOptions = [
+                        ['screen and (min-width: 640px)', {
+                            chartPadding: 100,
+                            labelOffset: 100,
+                            labelDirection: 'explode',
+                            labelInterpolationFnc: function (value) {
+                                return value;
+                            }
+                        }],
+                        ['screen and (min-width: 1024px)', {
+                            labelOffset: 80,
+                            chartPadding: 20
+                        }]
+                    ];
+
+                    new Chartist.Pie('#demo-pie-chart', dataInfo, options, responsiveOptions);
+
+                    var options;
+
+                    var dataInfo = {
+                        labels: labels,
+                        series: [series]
+                    };
+
+                    // line chart
+                    options = {
+                        height: "300px",
+                        showPoint: true,
+                        axisX: {
+                            showGrid: false
+                        },
+                        lineSmooth: false
+                    };
+
+                    new Chartist.Line('#demo-line-chart', dataInfo, options);
+
+
+                    // area chart
+                    options = {
+                        height: "270px",
+                        showArea: true,
+                        showLine: false,
+                        showPoint: false,
+                        axisX: {
+                            showGrid: false
+                        },
+                        lineSmooth: false
+                    };
+
+                    new Chartist.Line('#demo-area-chart', dataInfo, options);
+
+
+                    var options = {
+                        fullWidth: true,
+                        lineSmooth: false,
+                        height: "270px",
+                        low: 0,
+                        high: 'auto',
+                        series: {
+                            'series-projection': {
+                                showArea: true,
+                                showPoint: false,
+                                showLine: false
+                            }
+                        },
+                        axisX: {
+                            showGrid: false
+
+                        },
+                        axisY: {
+                            showGrid: false,
+                            onlyInteger: true,
+                            offset: 0
+                        },
+                        chartPadding: {
+                            left: 20,
+                            right: 20
+                        }
+                    };
+
+                    new Chartist.Line('#multiple-chart', dataInfo, options);
+
+
+                },
+                error: function () {
+                    alert("请求失败");
+                }
+            })
+            $("#charts").css("opacity", "100")
+        });
+    });
+</script>
+
+</body>
+<script>
+    function goPage(pno,psize){
+        var itable = document.getElementById("tableMessInfo");
+        var num = itable.rows.length;//表格所有行数(所有记录数)
+        console.log(num);
+        var totalPage = 0;//总页数
+        var pageSize = psize;//每页显示行数
+        //总共分几页
+        if(num/pageSize > parseInt(num/pageSize)){
+            totalPage=parseInt(num/pageSize)+1;
+        }else{
+            totalPage=parseInt(num/pageSize);
+        }
+        var currentPage = pno;//当前页数
+        var startRow = (currentPage - 1) * pageSize+1;//开始显示的行  31
+        var endRow = currentPage * pageSize;//结束显示的行   40
+        endRow = (endRow > num)? num : endRow;
+        console.log(endRow);
+        //遍历显示数据实现分页
+        for(var i=1;i<(num+1);i++){
+            var irow = itable.rows[i-1];
+            if(i>=startRow && i<=endRow){
+                irow.style.display = "block";
+            }else{
+                irow.style.display = "none";
+            }
+        }
+        var pageEnd = document.getElementById("pageEnd");
+        var tempStr = "共"+num+"条记录 分"+totalPage+"页 当前第"+currentPage+"页";
+        if(currentPage>1){
+            tempStr += "<a href=\"#\" onClick=\"goPage("+(1)+","+psize+")\">首页</a>";
+            tempStr += "<a href=\"#\" onClick=\"goPage("+(currentPage-1)+","+psize+")\"><上一页</a>"
+        }else{
+            tempStr += "首页";
+            tempStr += "<上一页";
+        }
+
+        if(currentPage<totalPage){
+            tempStr += "<a href=\"#\" onClick=\"goPage("+(currentPage+1)+","+psize+")\">下一页></a>";
+            tempStr += "<a href=\"#\" onClick=\"goPage("+(totalPage)+","+psize+")\">尾页</a>";
+        }else{
+            tempStr += "下一页>";
+            tempStr += "尾页";
+        }
+        document.getElementById("barcon").innerHTML = tempStr;
+    }
+
+</script>
+</html>
